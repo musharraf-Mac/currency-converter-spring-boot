@@ -14,7 +14,7 @@ app.use(express.json());
 app.post('/api/convert', async (req, res) => {
     const { value, unit } = req.query;
     const apikey = req.headers['x-api-key'];
-    const response = await fetch(`http://localhost:8081/api/temperatures/convert?value=${value}&unit=${unit}`, {
+    const response = await fetch(`http://localhost:8081/api/currency/convert?value=${value}&unit=${unit}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

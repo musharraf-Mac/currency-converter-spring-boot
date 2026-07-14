@@ -74,22 +74,22 @@
 </head>
 <body>
   <div class="container">
-    <h2>Temperature Converter</h2>
+    <h2>Currency Converter</h2>
 
     <div class="form-group">
-      <label for="tempValue">Temperature Value</label>
+      <label for="currValue">Currency value</label>
       <input type="number" id="tempValue" placeholder="E.g. 188" required>
     </div>
 
     <div class="form-group">
-      <label for="tempUnit">Select Unit:</label>
-      <select id="tempUnit">
-        <option value="C">Celsius (C)</option>
-        <option value="F">Fahrenheit (F)</option>
+      <label for="currUnit">Select Unit:</label>
+      <select id="currUnit">
+        <option value="L">LKR</option>
+        <option value="U">USD</option>
       </select>
     </div>
 
-    <button onclick="convertTemperature()">Convert</button>
+    <button onclick="convertCurrency()">Convert</button>
     <div class="output-box" id="outputBox">Results will appear here...</div>
   </div>
 </body>
