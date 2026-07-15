@@ -10,40 +10,52 @@ app.use(express.static(__dirname));
 // Accept incoming JSON payloads
 app.use(express.json());
 
-// Proxy Endpoint: Handles requests from your HTML page and forwards them
-app.post('/api/convert', async (req, res) => {
-    const { value, unit } = req.query;
+async function forwardRequest(req, res, url, method) {
     const apikey = req.headers['x-api-key'];
-    const response = await fetch(`http://localhost:8081/api/currency/convert?value=${value}&unit=${unit}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-KEY': apiKey
-    }
-});
 
     try {
-    // Node.js makes an HTTP call to the Spring Boot application (backend to backend)
-    const response = await fetch(`http://localhost:8081/api/temperatures/convert?value=${value}&unit=${unit}`, {    
-    method:'POST',
-    headers:
-    {
-    'Content-Type': 'application/json'
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': apikey
+            }
+        });
+
+        if (!response.ok) {
+            return res.status(response.status).json({ error: 'Failed to communicate with Spring Boot!' });
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            const data = await response.json();
+            return res.json(data);
+        }
+
+        const text = await response.text();
+        return res.type('text/plain').send(text);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
-    });
-
-    if (!response.ok) {
-    return res.status(response.status).json({ error: 'Failed to communicate with Spring Boot!' });
-    }
-
-    const data = await response.json();
-
-    // Return the resulting data to the frontend
-    res.json(data);
-} catch (error) {
-    res.status(500).json({ error: error.message });
 }
 
+app.post('/api/convert', async (req, res) => {
+    const { value, unit } = req.query;
+    return forwardRequest(req, res, `http://localhost:8081/api/currency/convert?value=${value}&unit=${unit}`, 'POST');
+});
+
+app.get('/api/history', async (req, res) => {
+    return forwardRequest(req, res, 'http://localhost:8081/api/currency/history', 'GET');
+});
+
+app.get('/api/exchange-rate', async (req, res) => {
+    const { unit } = req.query;
+    return forwardRequest(req, res, `http://localhost:8081/api/currency/exchange-rate?value=0&unit=${unit}`, 'GET');
+});
+
+app.get('/api/history/filter', async (req, res) => {
+    const { unit } = req.query;
+    return forwardRequest(req, res, `http://localhost:8081/api/currency/history/filter?unit=${unit}`, 'GET');
 });
 app.listen(PORT, () => {
     console.log(`Server running and accessible at: http://localhost:${PORT}`); 

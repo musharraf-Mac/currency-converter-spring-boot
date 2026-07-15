@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1.0">
-  <title>Temperature Converter Client</title>
+  <title>Currency Converter Client</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -74,22 +74,24 @@
 </head>
 <body>
   <div class="container">
-    <h2>Currency Converter</h2>
+    <h2>USD / LKR Converter</h2>
 
     <div class="form-group">
-      <label for="currValue">Currency value</label>
-      <input type="number" id="tempValue" placeholder="E.g. 188" required>
+      <label for="amountValue">Amount</label>
+      <input type="number" id="amountValue" placeholder="E.g. 188" required>
     </div>
 
     <div class="form-group">
-      <label for="currUnit">Select Unit:</label>
-      <select id="currUnit">
-        <option value="L">LKR</option>
-        <option value="U">USD</option>
+      <label for="currencyUnit">Select Currency:</label>
+      <select id="currencyUnit">
+        <option value="USD">USD</option>
+        <option value="LKR">LKR</option>
       </select>
     </div>
 
     <button onclick="convertCurrency()">Convert</button>
+    <button class="exchangeRate" onclick="exchangeRate()">Exchange Rate</button>
+    <button onclick="goToHistory()" class="btn btn-info">View History</button>
     <div class="output-box" id="outputBox">Results will appear here...</div>
   </div>
 </body>

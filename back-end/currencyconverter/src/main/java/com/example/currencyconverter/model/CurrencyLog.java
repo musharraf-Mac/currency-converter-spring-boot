@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document
+@Document(collection="currencyLog")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class CurrencyLog {
     @Id
     private String id;
-    private double inputTemperature;
+    private double inputAmount;
     private String inputUnit;
-    private double outputTemperature;
+    private double outputAmount;
     private String outputUnit;
 
     private String timestamp;

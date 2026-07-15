@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class CurrencyService {
     private final com.example.currencyconverter.repository.CurrencyRepository repository;
    private final ApiKeyRepository apiKeyRepository;    
+    private static final double USD_TO_LKR_RATE = 300.0;
     
     public void validateApiKey(String requestKey){
         if (requestKey == null || requestKey.trim().isEmpty()){
@@ -27,18 +28,21 @@ public class CurrencyService {
    
     public CurrencyLog convertAndSave(double value, String unit) {
         double converted;
+        String inputUnit = unit == null ? "" : unit.trim().toUpperCase();
         String outputUnit;
 
-        if (unit.equalsIgnoreCase("Celsius")) {
-            converted = (value * 1.8) + 32;
-            outputUnit = "Fahrenheit";
+        if ("USD".equals(inputUnit)) {
+            converted = value * USD_TO_LKR_RATE;
+            outputUnit = "LKR";
+        } else if ("LKR".equals(inputUnit)) {
+            converted = value / USD_TO_LKR_RATE;
+            outputUnit = "USD";
         } else {
-            converted = (value - 32) / 1.8;
-            outputUnit = "Celsius";
+            throw new IllegalArgumentException("Unsupported currency unit: " + unit);
         }
 
         CurrencyLog log = new CurrencyLog(
-            null, value, unit, converted, outputUnit,
+            null, value, inputUnit, converted, outputUnit,
             LocalDateTime.now().toString()
         );
 
@@ -48,27 +52,21 @@ public class CurrencyService {
     public java.util.List<CurrencyLog> getHistory() {
         return repository.findAll();
     }
-    // Add this method to TemperatureService.java
+    public String getExchangeRateMessage(String unit) {
+        String cleanUnit = unit == null ? "" : unit.trim().toUpperCase();
 
-public static String getSafetyWarning(double value, String unit) {
-    String cleanUnit = unit.trim().toUpperCase();
-    double celsiusTemp = value;
+        if ("USD".equals(cleanUnit)) {
+            return "1 USD = " + USD_TO_LKR_RATE + " LKR";
+        }
 
-    // Convert to a standardized unit (Celsius) for uniform evaluation
-    if ("FAHRENHEIT".equals(cleanUnit) || "F".equals(cleanUnit)) {
-    celsiusTemp = (value - 32) * 5 / 9;
+        if ("LKR".equals(cleanUnit)) {
+            return USD_TO_LKR_RATE + " LKR = 1 USD";
+        }
+
+        throw new IllegalArgumentException("Unsupported currency unit: " + unit);
     }
 
-    // Determine the environmental safety message
-    if (celsiusTemp >= 38.0) {
-    return "Warning: " + value + "°" + cleanUnit + " is dangerously HOT! Stay hydrated.";
-    } else if (celsiusTemp <= 0.0) {
-    return "Warning: " + value + "°" + cleanUnit + " is freezing cold! Bundle up.";
-    } else {
-    return "The temperature is comfortable and safe.";
+    public List<CurrencyLog> getLogsByUnit(String unit) {
+        return repository.findByInputUnitIgnoreCase(unit.trim());
     }
-}
-public List<CurrencyLog> getLogsByUnit(String unit) {
-    return repository.findByInputUnitIgnoreCase(unit.trim());
-}
 }
