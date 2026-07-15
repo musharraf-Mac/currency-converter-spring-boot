@@ -1,4 +1,5 @@
 const API_KEY = 'SUPER-SECRET-DEV-KEY-123';
+const API_URL = 'http://localhost:8081/api/currency';
 
 async function convertCurrency() {
   const amount = document.getElementById('amountValue').value;
@@ -13,7 +14,7 @@ async function convertCurrency() {
   outputArea.textContent = 'Converting...';
 
   try {
-    const response = await fetch(`/api/convert?value=${amount}&unit=${fromUnit}`, {
+    const response = await fetch(`${API_URL}/convert?value=${amount}&unit=${fromUnit}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
