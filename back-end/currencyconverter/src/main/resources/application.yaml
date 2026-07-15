@@ -1,3 +1,9 @@
 spring:
   application:
     name: currencyconverter
+  data:
+    mongodb: //localhost:27017
+    database: currencyconverter
+server:
+  port: 8081
+
